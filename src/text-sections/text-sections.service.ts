@@ -7,11 +7,10 @@ export class TextSectionsService {
     private readonly textSectionsRepository: TextSectionsRepository,
   ) {}
 
-  async search(prompt: string, wikiId: string) {
-    // Implement your search logic here, e.g., call the repository to find relevant text sections
+  async search(prompt: string, chatbotId: string) {
     const results = await this.textSectionsRepository.searchByPrompt(
       prompt,
-      wikiId,
+      chatbotId,
     );
     return results;
   }

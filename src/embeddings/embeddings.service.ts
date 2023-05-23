@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import { OpenAiService } from '../open-ai/open-ai.service';
 import { CreateTextSectionDto } from '../text-sections/dto/create-text-section.dto';
 import { CreateSourceDto } from '../sources/dto/create-source.dto';
@@ -11,11 +11,41 @@ import * as cheerio from 'cheerio';
 
 @Injectable()
 export class EmbeddingsService {
+  private readonly logger = new Logger(EmbeddingsService.name);
+
   constructor(
     private readonly openAiService: OpenAiService,
     private readonly supabaseService: SupabaseService,
     private readonly fileUploadService: FileUploadService,
   ) {}
+
+  async processUploadedFiles(
+    files: Express.Multer.File[],
+    wikiId: string,
+  ): Promise<
+    Array<{
+      message: string;
+      source: string;
+      sections: { total: number; data: string[] };
+    }>
+  > {
+    const results: Array<{
+      message: string;
+      source: string;
+      sections: { total: number; data: string[] };
+    }> = [];
+
+    for (const file of files) {
+      if (!file) {
+        throw new BadRequestException('File not provided');
+      }
+
+      const result = await this.processUploadedFile(file, wikiId);
+      results.push(result);
+    }
+
+    return results;
+  }
 
   async processUploadedFile(
     file: Express.Multer.File,
@@ -63,7 +93,7 @@ export class EmbeddingsService {
       file.mimetype,
     );
 
-    return getChunkedText(text, 1000);
+    return getChunkedText(text, 300);
   }
 
   async processUrl(url: string, wikiId: string) {
@@ -81,11 +111,9 @@ export class EmbeddingsService {
         const text = $('body').text();
 
         // Process the extracted text (e.g., create embeddings, text sections, etc.)
-        // Use the same logic as in your file upload functionality
         await this.processTextFromURL(text, url, wikiId);
       } else {
         // Process the file content (e.g., create embeddings, text sections, etc.)
-        // Use the same logic as in your file upload functionality
         const file = {
           buffer: response.data,
           mimetype: response.headers['content-type'],
@@ -94,12 +122,13 @@ export class EmbeddingsService {
         await this.processRemoteDownloadedFile(file, wikiId);
       }
     } catch (error) {
-      throw new Error('Error processing URL: ' + error.message);
+      this.logger.error(`Error processing URL: ${error}`);
+      throw new BadRequestException('Error processing URL');
     }
   }
 
   async processTextFromURL(text: string, url: string, wikiId: string) {
-    const chunks = getChunkedText(text, 1000).filter(
+    const chunks = getChunkedText(text, 300).filter(
       (chunk) => chunk.trim().length > 0,
     );
 
@@ -157,7 +186,8 @@ export class EmbeddingsService {
     });
 
     if (error) {
-      throw new Error('Failed to create source and text section');
+      this.logger.error(`Failed to create source and text section: ${error}`);
+      throw new BadRequestException('Failed to create source and text section');
     }
   }
 }

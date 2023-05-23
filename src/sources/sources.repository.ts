@@ -8,4 +8,23 @@ export class SourcesRepository extends EntityRepository<SourcesSchema> {
   constructor(@Inject(SupabaseClient) supabase: SupabaseClient) {
     super('sources', supabase);
   }
+
+  getWikiByIdWithTextSections(sourceId: string) {
+    return this.supabase
+      .from(this.tableName)
+      .select(
+        `
+        id,
+        name, 
+        text_sections (
+          id,
+          text
+        )`,
+      )
+      .eq('id', sourceId);
+  }
+
+  deleteSourceById(sourceId: string) {
+    return this.delete(sourceId);
+  }
 }

@@ -69,7 +69,7 @@ export abstract class EntityRepository<T> {
     return result;
   }
 
-  async delete(id: number): Promise<void> {
+  async delete(id: string): Promise<void> {
     const { error } = await this.supabase
       .from(this.tableName)
       .delete()

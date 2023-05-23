@@ -1,10 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  UnsupportedMediaTypeException,
+  Logger,
+} from '@nestjs/common';
 import { TextExtractionStrategy } from './strategies/text-extraction-strategy.interface';
 import { JsonTextExtractionStrategy } from './strategies/json-text-extraction.strategy';
 import { PdfTextExtractionStrategy } from './strategies/pdf-text-extraction.strategy';
 
 @Injectable()
 export class FileUploadService {
+  private readonly logger = new Logger(FileUploadService.name);
+
   private strategies: Record<string, TextExtractionStrategy> = {
     'application/json': new JsonTextExtractionStrategy(),
     'application/pdf': new PdfTextExtractionStrategy(),
@@ -17,9 +23,17 @@ export class FileUploadService {
     const strategy = this.strategies[fileType];
 
     if (!strategy) {
-      throw new Error(`Unsupported file type: ${fileType}`);
+      this.logger.error(`Unsupported file type: ${fileType}`);
+      throw new UnsupportedMediaTypeException(
+        `Unsupported file type: ${fileType}`,
+      );
     }
 
-    return strategy.extractText(fileBuffer);
+    try {
+      return await strategy.extractText(fileBuffer);
+    } catch (error) {
+      this.logger.error('Failed to extract text from buffer: ', error.message);
+      throw new Error('Failed to extract text from buffer: ' + error.message);
+    }
   }
 }

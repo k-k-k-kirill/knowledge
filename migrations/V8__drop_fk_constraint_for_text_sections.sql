@@ -1,0 +1,2 @@
+ALTER TABLE text_sections
+DROP CONSTRAINT text_sections_source_id_fkey;

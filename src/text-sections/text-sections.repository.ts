@@ -15,18 +15,19 @@ export class TextSectionsRepository extends EntityRepository<TextSectionSchema> 
 
   async searchByPrompt(
     prompt: string,
-    wikiId: string,
+    chatbotId: string,
   ): Promise<TextSectionSchema[]> {
     const queryEmbedding = await this.embeddingsService.createEmbedding(prompt);
 
     const { data, error } = await this.supabase.rpc('match_text_sections', {
       query_embedding: queryEmbedding,
-      wiki_id: wikiId,
-      match_threshold: 0.78,
+      chatbot_id: chatbotId,
+      match_threshold: 0.8,
       match_count: 10,
     });
 
     if (error) {
+      console.log(error);
       throw new Error('Failed to find a matching embedding');
     }
 

@@ -9,6 +9,7 @@ import { EmbeddingsService } from '../embeddings/embeddings.service';
 import { supabaseClientProvider } from '../supabase/supabase.module';
 import { SupabaseService } from '../supabase/supabase.service';
 import { FileUploadService } from '../file-upload/file-upload.service';
+import { MessagesRepository } from 'src/messages/messages.repository';
 
 @Module({
   controllers: [ChatController],
@@ -22,6 +23,7 @@ import { FileUploadService } from '../file-upload/file-upload.service';
     TextSectionsRepository,
     EmbeddingsService,
     FileUploadService,
+    MessagesRepository,
   ],
 })
 export class ChatModule {}

@@ -13,6 +13,9 @@ import { OpenAiService } from './open-ai/open-ai.service';
 import { WikisModule } from './wikis/wikis.module';
 import { FileUploadModule } from './file-upload/file-upload.module';
 import { ChatModule } from './chat/chat.module';
+import { ChatbotsModule } from './chatbots/chatbots.module';
+import { ConversationsModule } from './conversations/conversations.module';
+import { MessagesModule } from './messages/messages.module';
 
 @Module({
   imports: [
@@ -25,6 +28,9 @@ import { ChatModule } from './chat/chat.module';
     WikisModule,
     FileUploadModule,
     ChatModule,
+    ChatbotsModule,
+    ConversationsModule,
+    MessagesModule,
   ],
   controllers: [AppController],
   providers: [AppService, SupabaseService, FileUploadService, OpenAiService],
