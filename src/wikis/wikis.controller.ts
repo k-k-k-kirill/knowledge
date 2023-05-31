@@ -7,9 +7,11 @@ import {
   Param,
   Get,
   Logger,
+  UseGuards,
 } from '@nestjs/common';
 import { WikisService } from './wikis.service';
 import { CreateWikiDto } from './dto/create-wiki.dto';
+import { JwtAuthGuard } from '../auth/auth.guard';
 
 @Controller('wikis')
 export class WikisController {
@@ -17,6 +19,7 @@ export class WikisController {
 
   constructor(private readonly wikisService: WikisService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() createWikiDto: CreateWikiDto) {
     try {
@@ -27,6 +30,7 @@ export class WikisController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':wiki_id')
   async delete(@Param('wiki_id') wikiId: string) {
     try {
@@ -37,6 +41,7 @@ export class WikisController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async list() {
     try {
@@ -47,6 +52,7 @@ export class WikisController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':wikiId')
   async getById(@Param('wikiId') wikiId: string) {
     try {

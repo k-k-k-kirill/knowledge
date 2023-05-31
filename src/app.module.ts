@@ -16,6 +16,7 @@ import { ChatModule } from './chat/chat.module';
 import { ChatbotsModule } from './chatbots/chatbots.module';
 import { ConversationsModule } from './conversations/conversations.module';
 import { MessagesModule } from './messages/messages.module';
+import { JwtStrategy } from './auth/jwt.strategy';
 
 @Module({
   imports: [
@@ -33,6 +34,12 @@ import { MessagesModule } from './messages/messages.module';
     MessagesModule,
   ],
   controllers: [AppController],
-  providers: [AppService, SupabaseService, FileUploadService, OpenAiService],
+  providers: [
+    JwtStrategy,
+    AppService,
+    SupabaseService,
+    FileUploadService,
+    OpenAiService,
+  ],
 })
 export class AppModule {}

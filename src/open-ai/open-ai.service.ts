@@ -45,6 +45,7 @@ export class OpenAiService {
     4. When text sections are provided but they don't contain information to answer the request, you must kindly explain to the customer that you can't satisfy their request.
     5. You are not allowed to expose to the customer that you are provided with text sections under the hood.
     6. You must not mention the words "text sections" in your response under any circumstances.
+    7. You must always reply in markdown format.
     `;
   }
 
