@@ -10,7 +10,7 @@ export class ConversationsRepository extends EntityRepository<ConversationsSchem
     super('conversations', supabase);
   }
 
-  findAllForChatbot(chatbotId: string) {
+  findAllForChatbot(chatbotId: string, userId: string) {
     return this.supabase
       .from(this.tableName)
       .select(
@@ -29,14 +29,16 @@ export class ConversationsRepository extends EntityRepository<ConversationsSchem
         `,
       )
       .eq('chatbot_id', chatbotId)
+      .eq('user_id', userId)
       .order('started_at', { ascending: false });
   }
 
-  createConversation(conversationData: CreateConversationDto) {
+  createConversation(conversationData: CreateConversationDto, userId: string) {
     return this.supabase.rpc('create_conversation', {
       conversation_data: {
         chatbot_id: conversationData.chatbotId,
         messages: conversationData.messages,
+        user_id: userId,
       },
     });
   }

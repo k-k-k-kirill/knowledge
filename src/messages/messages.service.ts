@@ -15,12 +15,14 @@ export class MessagesService {
   async createMessageInConversation(
     conversationId: string,
     messageData: CreateMessageDto,
+    userId: string,
   ) {
     try {
       await this.messagesRepository.create({
         conversation_id: conversationId,
         author: messageData.author,
         content: messageData.content,
+        user_id: userId,
       });
     } catch (error) {
       this.logger.error(
@@ -33,11 +35,12 @@ export class MessagesService {
     }
   }
 
-  async getMessagesForConversation(conversationId: string) {
+  async getMessagesForConversation(conversationId: string, userId: string) {
     try {
       const { data, error } =
         await this.messagesRepository.getMessagesForConversation(
           conversationId,
+          userId,
         );
 
       if (error) {

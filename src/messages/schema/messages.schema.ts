@@ -9,4 +9,5 @@ export class MessagesSchema {
   author: MessageAuthor;
   content: string;
   embedding: number[];
+  user_id: string;
 }

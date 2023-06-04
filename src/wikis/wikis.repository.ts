@@ -9,7 +9,7 @@ export class WikisRepository extends EntityRepository<WikisSchema> {
     super('wikis', supabase);
   }
 
-  getWikiByIdWithSources(wikiId: string) {
+  getWikiByIdWithSources(wikiId: string, userId: string) {
     return this.supabase
       .from(this.tableName)
       .select(
@@ -23,6 +23,7 @@ export class WikisRepository extends EntityRepository<WikisSchema> {
           upload_timestamp
         )`,
       )
-      .eq('id', wikiId);
+      .eq('id', wikiId)
+      .eq('user_id', userId);
   }
 }

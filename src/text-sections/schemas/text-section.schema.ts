@@ -3,4 +3,5 @@ export class TextSectionSchema {
   sourceId: string;
   text: string;
   embedding: number[];
+  user_id: string;
 }

@@ -8,6 +8,7 @@ import {
   Get,
   Logger,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import { WikisService } from './wikis.service';
 import { CreateWikiDto } from './dto/create-wiki.dto';
@@ -21,9 +22,9 @@ export class WikisController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@Body() createWikiDto: CreateWikiDto) {
+  async create(@Request() req, @Body() createWikiDto: CreateWikiDto) {
     try {
-      await this.wikisService.create(createWikiDto);
+      await this.wikisService.create(createWikiDto, req.user.userId);
     } catch (error) {
       this.logger.error('Error creating wiki: ' + error.message, error.stack);
       throw new InternalServerErrorException('Error creating wiki');
@@ -32,9 +33,9 @@ export class WikisController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(':wiki_id')
-  async delete(@Param('wiki_id') wikiId: string) {
+  async delete(@Request() req, @Param('wiki_id') wikiId: string) {
     try {
-      await this.wikisService.delete(wikiId);
+      await this.wikisService.delete(wikiId, req.user.userId);
     } catch (error) {
       this.logger.error('Error deleting wiki: ' + error.message, error.stack);
       throw new InternalServerErrorException('Error deleting wiki');
@@ -43,9 +44,9 @@ export class WikisController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  async list() {
+  async list(@Request() req) {
     try {
-      return await this.wikisService.list();
+      return await this.wikisService.list(req.user.userId);
     } catch (error) {
       this.logger.error('Error listing wikis: ' + error.message, error.stack);
       throw new InternalServerErrorException('Error listing wikis');
@@ -54,9 +55,9 @@ export class WikisController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':wikiId')
-  async getById(@Param('wikiId') wikiId: string) {
+  async getById(@Request() req, @Param('wikiId') wikiId: string) {
     try {
-      const { data } = await this.wikisService.getById(wikiId);
+      const { data } = await this.wikisService.getById(wikiId, req.user.userId);
 
       return data[0];
     } catch (error) {

@@ -12,23 +12,30 @@ export class ChatbotsService {
 
   constructor(private readonly chatbotsRepository: ChatbotsRepository) {}
 
-  async getAllChatbots() {
-    const chatbots = await this.chatbotsRepository.findAll();
+  async getAllChatbots(userId: string) {
+    const chatbots = await this.chatbotsRepository.findAll(userId);
 
     return chatbots;
   }
 
-  async getChatbotById(chatbotId: string) {
+  async getChatbotById(chatbotId: string, userId: string) {
     const chatbot =
-      await this.chatbotsRepository.getChatbotByIdWithConversations(chatbotId);
+      await this.chatbotsRepository.getChatbotByIdWithConversations(
+        chatbotId,
+        userId,
+      );
 
     return chatbot;
   }
 
-  async createChatbot(createChatbot: CreateChatbotDto): Promise<any> {
+  async createChatbot(
+    createChatbot: CreateChatbotDto,
+    userId: string,
+  ): Promise<any> {
     try {
       const { error } = await this.chatbotsRepository.createChatbot(
         createChatbot,
+        userId,
       );
 
       if (error) {
@@ -41,7 +48,7 @@ export class ChatbotsService {
     }
   }
 
-  async deleteChatbot(chatbotId: string) {
-    await this.chatbotsRepository.deleteChatbotById(chatbotId);
+  async deleteChatbot(chatbotId: string, userId: string) {
+    await this.chatbotsRepository.deleteChatbotById(chatbotId, userId);
   }
 }

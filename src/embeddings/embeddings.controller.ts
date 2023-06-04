@@ -7,9 +7,12 @@ import {
   Param,
   Body,
   Logger,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { EmbeddingsService } from './embeddings.service';
+import { JwtAuthGuard } from '../auth/auth.guard';
 
 @Controller('embeddings')
 export class EmbeddingsController {
@@ -17,9 +20,11 @@ export class EmbeddingsController {
 
   constructor(private readonly embeddingsService: EmbeddingsService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Post('upload/:wiki_id')
   @UseInterceptors(FilesInterceptor('files'))
   async uploadFiles(
+    @Request() req,
     @UploadedFiles() files: Express.Multer.File[],
     @Param('wiki_id') wikiId: string,
   ) {
@@ -31,6 +36,7 @@ export class EmbeddingsController {
       const results = await this.embeddingsService.processUploadedFiles(
         files,
         wikiId,
+        req.user.userId,
       );
       return results;
     } catch (error) {
@@ -39,14 +45,19 @@ export class EmbeddingsController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('url/:wiki_id')
-  async addUrl(@Body('url') url: string, @Param('wiki_id') wikiId: string) {
+  async addUrl(
+    @Request() req,
+    @Body('url') url: string,
+    @Param('wiki_id') wikiId: string,
+  ) {
     if (!url) {
       throw new BadRequestException('URL not provided');
     }
 
     try {
-      await this.embeddingsService.processUrl(url, wikiId);
+      await this.embeddingsService.processUrl(url, wikiId, req.user.userId);
       return { message: 'URL processed successfully' };
     } catch (error) {
       this.logger.error(`Error processing URL: ${error}`);

@@ -22,6 +22,7 @@ export class EmbeddingsService {
   async processUploadedFiles(
     files: Express.Multer.File[],
     wikiId: string,
+    userId: string,
   ): Promise<
     Array<{
       message: string;
@@ -40,7 +41,7 @@ export class EmbeddingsService {
         throw new BadRequestException('File not provided');
       }
 
-      const result = await this.processUploadedFile(file, wikiId);
+      const result = await this.processUploadedFile(file, wikiId, userId);
       results.push(result);
     }
 
@@ -50,6 +51,7 @@ export class EmbeddingsService {
   async processUploadedFile(
     file: Express.Multer.File,
     wikiId: string,
+    userId: string,
   ): Promise<{
     message: string;
     source: string;
@@ -62,14 +64,16 @@ export class EmbeddingsService {
       type: 'file',
       content_hash: getFileHash(file.buffer),
       wiki_id: wikiId,
+      user_id: userId,
     };
 
-    return this.processChunks(chunks, sourceData);
+    return this.processChunks(chunks, sourceData, userId);
   }
 
   async processRemoteDownloadedFile(
     file: any,
     wikiId: string,
+    userId: string,
   ): Promise<{
     message: string;
     source: string;
@@ -82,9 +86,10 @@ export class EmbeddingsService {
       type: 'url',
       content_hash: getFileHash(file.buffer),
       wiki_id: wikiId,
+      user_id: userId,
     };
 
-    return this.processChunks(chunks, sourceData);
+    return this.processChunks(chunks, sourceData, userId);
   }
 
   async getChunkedTextFromFile(file: any): Promise<string[]> {
@@ -96,7 +101,7 @@ export class EmbeddingsService {
     return getChunkedText(text, 300);
   }
 
-  async processUrl(url: string, wikiId: string) {
+  async processUrl(url: string, wikiId: string, userId: string) {
     try {
       // Fetch the content from the URL
       const response = await axios.get(url, { responseType: 'arraybuffer' });
@@ -111,7 +116,7 @@ export class EmbeddingsService {
         const text = $('body').text();
 
         // Process the extracted text (e.g., create embeddings, text sections, etc.)
-        await this.processTextFromURL(text, url, wikiId);
+        await this.processTextFromURL(text, url, wikiId, userId);
       } else {
         // Process the file content (e.g., create embeddings, text sections, etc.)
         const file = {
@@ -119,7 +124,7 @@ export class EmbeddingsService {
           mimetype: response.headers['content-type'],
           originalname: url.split('/').pop(),
         };
-        await this.processRemoteDownloadedFile(file, wikiId);
+        await this.processRemoteDownloadedFile(file, wikiId, userId);
       }
     } catch (error) {
       this.logger.error(`Error processing URL: ${error}`);
@@ -127,7 +132,12 @@ export class EmbeddingsService {
     }
   }
 
-  async processTextFromURL(text: string, url: string, wikiId: string) {
+  async processTextFromURL(
+    text: string,
+    url: string,
+    wikiId: string,
+    userId: string,
+  ) {
     const chunks = getChunkedText(text, 300).filter(
       (chunk) => chunk.trim().length > 0,
     );
@@ -137,14 +147,19 @@ export class EmbeddingsService {
       type: 'url',
       content_hash: getFileHash(Buffer.from(text)),
       wiki_id: wikiId,
+      user_id: userId,
     };
 
-    return this.processChunks(chunks, sourceData);
+    return this.processChunks(chunks, sourceData, userId);
   }
 
-  async processChunks(chunks: string[], sourceData: CreateSourceDto) {
+  async processChunks(
+    chunks: string[],
+    sourceData: CreateSourceDto,
+    userId: string,
+  ) {
     for (const chunk of chunks) {
-      await this.processChunk(chunk, sourceData);
+      await this.processChunk(chunk, sourceData, userId);
     }
 
     return {
@@ -157,13 +172,18 @@ export class EmbeddingsService {
     };
   }
 
-  async processChunk(chunk: string, sourceData: CreateSourceDto) {
+  async processChunk(
+    chunk: string,
+    sourceData: CreateSourceDto,
+    userId: string,
+  ) {
     const embedding = await this.createEmbedding(chunk);
 
     const textSectionData = {
       text: chunk,
       embedding,
       wiki_id: sourceData.wiki_id,
+      user_id: userId,
     };
 
     await this.createSourceAndTextSection(sourceData, textSectionData);
@@ -186,6 +206,7 @@ export class EmbeddingsService {
     });
 
     if (error) {
+      console.log(error);
       this.logger.error(`Failed to create source and text section: ${error}`);
       throw new BadRequestException('Failed to create source and text section');
     }

@@ -16,6 +16,7 @@ export class TextSectionsRepository extends EntityRepository<TextSectionSchema> 
   async searchByPrompt(
     prompt: string,
     chatbotId: string,
+    userId: string,
   ): Promise<TextSectionSchema[]> {
     const queryEmbedding = await this.embeddingsService.createEmbedding(prompt);
 
@@ -24,6 +25,7 @@ export class TextSectionsRepository extends EntityRepository<TextSectionSchema> 
       chatbot_id: chatbotId,
       match_threshold: 0.8,
       match_count: 10,
+      user_id: userId,
     });
 
     if (error) {

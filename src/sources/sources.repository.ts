@@ -9,7 +9,7 @@ export class SourcesRepository extends EntityRepository<SourcesSchema> {
     super('sources', supabase);
   }
 
-  getWikiByIdWithTextSections(sourceId: string) {
+  getWikiByIdWithTextSections(sourceId: string, userId: string) {
     return this.supabase
       .from(this.tableName)
       .select(
@@ -21,10 +21,11 @@ export class SourcesRepository extends EntityRepository<SourcesSchema> {
           text
         )`,
       )
-      .eq('id', sourceId);
+      .eq('id', sourceId)
+      .eq('user_id', userId);
   }
 
-  deleteSourceById(sourceId: string) {
-    return this.delete(sourceId);
+  deleteSourceById(sourceId: string, userId: string) {
+    return this.delete(sourceId, userId);
   }
 }

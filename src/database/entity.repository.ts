@@ -31,8 +31,11 @@ export abstract class EntityRepository<T> {
     return result;
   }
 
-  async findAll(): Promise<T[]> {
-    const { data, error } = await this.supabase.from(this.tableName).select();
+  async findAll(userId: string): Promise<T[]> {
+    const { data, error } = await this.supabase
+      .from(this.tableName)
+      .select()
+      .eq('user_id', userId);
 
     if (error) {
       throw new Error(error.message);
@@ -69,11 +72,12 @@ export abstract class EntityRepository<T> {
     return result;
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: string, userId: string): Promise<void> {
     const { error } = await this.supabase
       .from(this.tableName)
       .delete()
-      .eq('id', id);
+      .eq('id', id)
+      .eq('user_id', userId);
 
     if (error) {
       throw new Error(error.message);

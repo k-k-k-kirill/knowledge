@@ -7,9 +7,12 @@ import {
   Param,
   BadRequestException,
   Logger,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { CreateChatbotDto } from './dto/create-chatbot.dto';
 import { ChatbotsService } from './chatbots.service';
+import { JwtAuthGuard } from '../auth/auth.guard';
 
 @Controller('chatbots')
 export class ChatbotsController {
@@ -17,10 +20,11 @@ export class ChatbotsController {
 
   constructor(private readonly chatbotsService: ChatbotsService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Get()
-  async getAllChatbots() {
+  async getAllChatbots(@Request() req) {
     try {
-      const data = await this.chatbotsService.getAllChatbots();
+      const data = await this.chatbotsService.getAllChatbots(req.user.userId);
       return data;
     } catch (error) {
       this.logger.error(`Error fetching chatbots: ${error.message}`);
@@ -28,10 +32,14 @@ export class ChatbotsController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':chatbotId')
-  async getChatbotById(@Param('chatbotId') chatbotId: string) {
+  async getChatbotById(@Request() req, @Param('chatbotId') chatbotId: string) {
     try {
-      const { data } = await this.chatbotsService.getChatbotById(chatbotId);
+      const { data } = await this.chatbotsService.getChatbotById(
+        chatbotId,
+        req.user.userId,
+      );
       return data[0];
     } catch (error) {
       this.logger.error(`Error fetching chatbot details: ${error.message}`);
@@ -39,20 +47,28 @@ export class ChatbotsController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
-  async createChatbot(@Body() createChatbotDto: CreateChatbotDto) {
+  async createChatbot(
+    @Request() req,
+    @Body() createChatbotDto: CreateChatbotDto,
+  ) {
     try {
-      await this.chatbotsService.createChatbot(createChatbotDto);
+      await this.chatbotsService.createChatbot(
+        createChatbotDto,
+        req.user.userId,
+      );
     } catch (error) {
       this.logger.error(`Error creating chatbot: ${error.message}`);
       throw new BadRequestException('Failed to create chatbot');
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Delete(':chatbotId')
-  async deleteChatbot(@Param('chatbotId') chatbotId: string) {
+  async deleteChatbot(@Request() req, @Param('chatbotId') chatbotId: string) {
     try {
-      await this.chatbotsService.deleteChatbot(chatbotId);
+      await this.chatbotsService.deleteChatbot(chatbotId, req.user.userId);
     } catch (error) {
       this.logger.error(`Error deleting chatbot: ${error.message}`);
       throw new BadRequestException('Failed to delete chatbot');

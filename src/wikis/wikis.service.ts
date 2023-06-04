@@ -8,23 +8,24 @@ import { WikisSchema } from './schema/wikis.schema';
 export class WikisService {
   constructor(private readonly wikisRepository: WikisRepository) {}
 
-  async create(createWikiDto: CreateWikiDto): Promise<void> {
-    await this.wikisRepository.create(createWikiDto);
+  async create(createWikiDto: CreateWikiDto, userId: string): Promise<void> {
+    await this.wikisRepository.create({ ...createWikiDto, user_id: userId });
   }
 
-  async delete(wikiId: string): Promise<void> {
-    await this.wikisRepository.delete(wikiId);
+  async delete(wikiId: string, userId: string): Promise<void> {
+    await this.wikisRepository.delete(wikiId, userId);
   }
 
-  async list(): Promise<WikisSchema[]> {
-    const wikis = await this.wikisRepository.findAll();
+  async list(userId: string): Promise<WikisSchema[]> {
+    const wikis = await this.wikisRepository.findAll(userId);
 
     return wikis;
   }
 
-  async getById(wikiId: string) {
+  async getById(wikiId: string, userId: string) {
     const wikiWithSources = await this.wikisRepository.getWikiByIdWithSources(
       wikiId,
+      userId,
     );
 
     return wikiWithSources;

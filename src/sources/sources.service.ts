@@ -5,14 +5,17 @@ import { SourcesRepository } from './sources.repository';
 export class SourcesService {
   constructor(private readonly sourcesRepository: SourcesRepository) {}
 
-  async getById(sourceId: string) {
+  async getById(sourceId: string, userId: string) {
     const sourceWithTextSections =
-      await this.sourcesRepository.getWikiByIdWithTextSections(sourceId);
+      await this.sourcesRepository.getWikiByIdWithTextSections(
+        sourceId,
+        userId,
+      );
 
     return sourceWithTextSections;
   }
 
-  async deleteById(sourceId: string) {
-    await this.sourcesRepository.deleteSourceById(sourceId);
+  async deleteById(sourceId: string, userId: string) {
+    await this.sourcesRepository.deleteSourceById(sourceId, userId);
   }
 }

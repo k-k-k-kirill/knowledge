@@ -17,6 +17,7 @@ import { ChatbotsModule } from './chatbots/chatbots.module';
 import { ConversationsModule } from './conversations/conversations.module';
 import { MessagesModule } from './messages/messages.module';
 import { JwtStrategy } from './auth/jwt.strategy';
+import { JwtCookieStrategy } from './auth/jwt-cookie.strategy';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { JwtStrategy } from './auth/jwt.strategy';
   controllers: [AppController],
   providers: [
     JwtStrategy,
+    JwtCookieStrategy,
     AppService,
     SupabaseService,
     FileUploadService,

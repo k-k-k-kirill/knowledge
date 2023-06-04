@@ -9,9 +9,12 @@ import {
   HttpException,
   HttpStatus,
   Logger,
+  UseGuards,
+  Request,
 } from '@nestjs/common';
 import { ChatService } from './chat.service';
 import { Response } from 'express';
+import { JwtCookieAuthGuard } from '../auth/auth-cookie.guard';
 
 @Controller('chat')
 export class ChatController {
@@ -19,8 +22,10 @@ export class ChatController {
 
   constructor(private readonly chatService: ChatService) {}
 
+  @UseGuards(JwtCookieAuthGuard)
   @Post('')
   async handleUserPrompt(
+    @Request() req,
     @Body('text') text: string,
     @Body('chatbotId') chatbotId: string,
     @Body('conversationId') conversationId: string,
@@ -30,6 +35,7 @@ export class ChatController {
         text,
         chatbotId,
         conversationId,
+        req.user.userId,
       );
       return result;
     } catch (error) {
@@ -41,11 +47,13 @@ export class ChatController {
     }
   }
 
+  @UseGuards(JwtCookieAuthGuard)
   @Get('/stream')
   @Header('Content-Type', 'text/event-stream')
   @Header('Connection', 'keep-alive')
   @Header('Cache-Control', 'no-cache')
   async handleUserPromptInStream(
+    @Request() req,
     @Query('text') text: string,
     @Query('chatbotId') chatbotId: string,
     @Query('conversationId') conversationId: string | undefined | null,
@@ -56,6 +64,7 @@ export class ChatController {
         text,
         chatbotId,
         conversationId,
+        req.user.userId,
       );
 
       for await (const data of chatStream) {

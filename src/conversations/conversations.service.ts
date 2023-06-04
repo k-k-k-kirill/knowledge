@@ -14,10 +14,11 @@ export class ConversationsService {
     private readonly conversationsRepository: ConversationsRepository,
   ) {}
 
-  async findAll(chatbotId: string) {
+  async findAll(chatbotId: string, userId: string) {
     try {
       const { data } = await this.conversationsRepository.findAllForChatbot(
         chatbotId,
+        userId,
       );
       return data;
     } catch (error) {
@@ -28,9 +29,9 @@ export class ConversationsService {
     }
   }
 
-  async delete(conversationId: string) {
+  async delete(conversationId: string, userId: string) {
     try {
-      await this.conversationsRepository.delete(conversationId);
+      await this.conversationsRepository.delete(conversationId, userId);
     } catch (error) {
       this.logger.error('Failed to delete conversation: ', error.message);
       throw new InternalServerErrorException(
@@ -39,10 +40,13 @@ export class ConversationsService {
     }
   }
 
-  async create(conversationData: CreateConversationDto) {
+  async create(conversationData: CreateConversationDto, userId: string) {
     try {
       const { data: conversationId, error } =
-        await this.conversationsRepository.createConversation(conversationData);
+        await this.conversationsRepository.createConversation(
+          conversationData,
+          userId,
+        );
 
       if (error) {
         this.logger.error('Failed to create new conversation: ', error.message);

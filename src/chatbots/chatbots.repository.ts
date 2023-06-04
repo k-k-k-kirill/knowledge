@@ -14,7 +14,7 @@ export class ChatbotsRepository extends EntityRepository<ChatbotsSchema> {
     super('chatbots', supabase);
   }
 
-  getChatbotByIdWithConversations(chatbotId: string) {
+  getChatbotByIdWithConversations(chatbotId: string, userId: string) {
     return this.supabase
       .from(this.tableName)
       .select(
@@ -27,14 +27,16 @@ export class ChatbotsRepository extends EntityRepository<ChatbotsSchema> {
         )
         `,
       )
-      .eq('id', chatbotId);
+      .eq('id', chatbotId)
+      .eq('user_id', userId);
   }
 
-  createChatbot(createChatbot: CreateChatbotDto) {
+  createChatbot(createChatbot: CreateChatbotDto, userId: string) {
     try {
       return this.supabase.rpc('create_chatbot', {
         name: createChatbot.name,
         wiki_ids: createChatbot.wikiIds,
+        user_id: userId,
       });
     } catch (error) {
       throw new InternalServerErrorException(
@@ -43,7 +45,7 @@ export class ChatbotsRepository extends EntityRepository<ChatbotsSchema> {
     }
   }
 
-  deleteChatbotById(chatbotId: string) {
-    return this.delete(chatbotId);
+  deleteChatbotById(chatbotId: string, userId: string) {
+    return this.delete(chatbotId, userId);
   }
 }

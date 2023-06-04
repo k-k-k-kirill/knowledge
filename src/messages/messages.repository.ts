@@ -9,7 +9,7 @@ export class MessagesRepository extends EntityRepository<MessagesSchema> {
     super('messages', supabase);
   }
 
-  getMessagesForConversation(conversationId: string) {
+  getMessagesForConversation(conversationId: string, userId: string) {
     return this.supabase
       .from(this.tableName)
       .select(
@@ -21,6 +21,7 @@ export class MessagesRepository extends EntityRepository<MessagesSchema> {
       `,
       )
       .eq('conversation_id', conversationId)
+      .eq('user_id', userId)
       .order('created_at', { ascending: true });
   }
 }

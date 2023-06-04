@@ -1,11 +1,15 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt, Strategy } from 'passport-jwt';
+import { Strategy } from 'passport-jwt';
 import { ConfigService } from '@nestjs/config';
 import * as jwksRsa from 'jwks-rsa';
+import * as cookie from 'cookie';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class JwtCookieStrategy extends PassportStrategy(
+  Strategy,
+  'jwt-cookie',
+) {
   constructor(configService: ConfigService) {
     super({
       secretOrKeyProvider: jwksRsa.passportJwtSecret({
@@ -16,7 +20,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
           'AUTH0_DOMAIN',
         )}/.well-known/jwks.json`,
       }),
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: (req) => {
+        // Extract the token from the cookie
+        const cookies = req.headers.cookie;
+        const parsedCookies = cookie.parse(cookies || '');
+        const token = parsedCookies.token;
+        return token;
+      },
       audience: configService.get<string>('AUTH0_AUDIENCE'),
       issuer: `https://${configService.get<string>('AUTH0_DOMAIN')}/`,
       algorithms: ['RS256'],

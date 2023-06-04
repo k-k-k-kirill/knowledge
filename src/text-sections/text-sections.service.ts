@@ -7,10 +7,11 @@ export class TextSectionsService {
     private readonly textSectionsRepository: TextSectionsRepository,
   ) {}
 
-  async search(prompt: string, chatbotId: string) {
+  async search(prompt: string, chatbotId: string, userId: string) {
     const results = await this.textSectionsRepository.searchByPrompt(
       prompt,
       chatbotId,
+      userId,
     );
     return results;
   }

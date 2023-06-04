@@ -21,10 +21,14 @@ export class ChatService {
     text: string,
     chatbotId: string,
     conversationId: string | undefined | null,
+    userId: string,
   ): Promise<any> {
     try {
-      const textSections = await this.getTextSections(text, chatbotId);
-      const messages = await this.getConversationMessages(conversationId);
+      const textSections = await this.getTextSections(text, chatbotId, userId);
+      const messages = await this.getConversationMessages(
+        conversationId,
+        userId,
+      );
 
       const responseMessage = await this.openAiService.createChatCompletion(
         text,
@@ -49,10 +53,14 @@ export class ChatService {
     text: string,
     chatbotId: string,
     conversationId: string | undefined | null,
+    userId: string,
   ): Promise<any> {
     try {
-      const textSections = await this.getTextSections(text, chatbotId);
-      const messages = await this.getConversationMessages(conversationId);
+      const textSections = await this.getTextSections(text, chatbotId, userId);
+      const messages = await this.getConversationMessages(
+        conversationId,
+        userId,
+      );
 
       const responseStream =
         await this.openAiService.createChatCompletionStream(
@@ -74,12 +82,17 @@ export class ChatService {
     }
   }
 
-  private async getTextSections(text: string, chatbotId: string) {
-    return this.textSectionsService.search(text, chatbotId);
+  private async getTextSections(
+    text: string,
+    chatbotId: string,
+    userId: string,
+  ) {
+    return this.textSectionsService.search(text, chatbotId, userId);
   }
 
   private async getConversationMessages(
     conversationId: string | undefined | null,
+    userId: string,
   ) {
     let messages = [];
 
@@ -87,6 +100,7 @@ export class ChatService {
       const { data, error } =
         await this.messagesRepository.getMessagesForConversation(
           conversationId,
+          userId,
         );
 
       if (error) {
