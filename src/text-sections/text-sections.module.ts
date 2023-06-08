@@ -8,9 +8,12 @@ import { OpenAiService } from '../open-ai/open-ai.service';
 import { SupabaseService } from '../supabase/supabase.service';
 import { ConfigService } from '@nestjs/config';
 import { FileUploadModule } from '../file-upload/file-upload.module';
+import { PromptsService } from '../prompts/prompts.service';
+import { OpenAiModule } from '../open-ai/open-ai.module';
+import { ContextBuilderService } from '../open-ai/context-builder.service';
 
 @Module({
-  imports: [FileUploadModule],
+  imports: [FileUploadModule, OpenAiModule],
   controllers: [TextSectionsController],
   providers: [
     TextSectionsService,
@@ -20,6 +23,8 @@ import { FileUploadModule } from '../file-upload/file-upload.module';
     OpenAiService,
     SupabaseService,
     ConfigService,
+    PromptsService,
+    ContextBuilderService,
   ],
 })
 export class TextSectionsModule {}

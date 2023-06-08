@@ -1,7 +1,5 @@
 import {
   Controller,
-  Post,
-  Body,
   Header,
   Res,
   Get,
@@ -21,31 +19,6 @@ export class ChatController {
   private readonly logger = new Logger(ChatController.name);
 
   constructor(private readonly chatService: ChatService) {}
-
-  @UseGuards(JwtCookieAuthGuard)
-  @Post('')
-  async handleUserPrompt(
-    @Request() req,
-    @Body('text') text: string,
-    @Body('chatbotId') chatbotId: string,
-    @Body('conversationId') conversationId: string,
-  ): Promise<{ response: string }> {
-    try {
-      const result = await this.chatService.getChatResponse(
-        text,
-        chatbotId,
-        conversationId,
-        req.user.userId,
-      );
-      return result;
-    } catch (error) {
-      this.logger.error('Error getting chat response: ', error.message);
-      throw new HttpException(
-        'Error getting chat response: ' + error.message,
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
-    }
-  }
 
   @UseGuards(JwtCookieAuthGuard)
   @Get('/stream')

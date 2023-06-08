@@ -17,38 +17,6 @@ export class ChatService {
     private readonly messagesRepository: MessagesRepository,
   ) {}
 
-  async getChatResponse(
-    text: string,
-    chatbotId: string,
-    conversationId: string | undefined | null,
-    userId: string,
-  ): Promise<any> {
-    try {
-      const textSections = await this.getTextSections(text, chatbotId, userId);
-      const messages = await this.getConversationMessages(
-        conversationId,
-        userId,
-      );
-
-      const responseMessage = await this.openAiService.createChatCompletion(
-        text,
-        textSections,
-        messages,
-      );
-
-      if (!responseMessage) {
-        throw new InternalServerErrorException(
-          'Could not get chat response from provider.',
-        );
-      }
-
-      return responseMessage;
-    } catch (error) {
-      this.logger.error('Error getting chat response: ', error.message);
-      throw new InternalServerErrorException(error.message);
-    }
-  }
-
   async getChatResponseInStream(
     text: string,
     chatbotId: string,

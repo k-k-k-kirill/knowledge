@@ -18,6 +18,10 @@ import { ConversationsModule } from './conversations/conversations.module';
 import { MessagesModule } from './messages/messages.module';
 import { JwtStrategy } from './auth/jwt.strategy';
 import { JwtCookieStrategy } from './auth/jwt-cookie.strategy';
+import { PromptsModule } from './prompts/prompts.module';
+import { PromptsService } from './prompts/prompts.service';
+import { OpenAiModule } from './open-ai/open-ai.module';
+import { ContextBuilderService } from './open-ai/context-builder.service';
 
 @Module({
   imports: [
@@ -33,6 +37,8 @@ import { JwtCookieStrategy } from './auth/jwt-cookie.strategy';
     ChatbotsModule,
     ConversationsModule,
     MessagesModule,
+    PromptsModule,
+    OpenAiModule,
   ],
   controllers: [AppController],
   providers: [
@@ -42,6 +48,8 @@ import { JwtCookieStrategy } from './auth/jwt-cookie.strategy';
     SupabaseService,
     FileUploadService,
     OpenAiService,
+    PromptsService,
+    ContextBuilderService,
   ],
 })
 export class AppModule {}

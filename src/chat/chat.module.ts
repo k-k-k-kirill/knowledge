@@ -10,8 +10,12 @@ import { supabaseClientProvider } from '../supabase/supabase.module';
 import { SupabaseService } from '../supabase/supabase.service';
 import { FileUploadService } from '../file-upload/file-upload.service';
 import { MessagesRepository } from 'src/messages/messages.repository';
+import { PromptsService } from '../prompts/prompts.service';
+import { OpenAiModule } from '../open-ai/open-ai.module';
+import { ContextBuilderService } from 'src/open-ai/context-builder.service';
 
 @Module({
+  imports: [OpenAiModule],
   controllers: [ChatController],
   providers: [
     supabaseClientProvider,
@@ -24,6 +28,8 @@ import { MessagesRepository } from 'src/messages/messages.repository';
     EmbeddingsService,
     FileUploadService,
     MessagesRepository,
+    PromptsService,
+    ContextBuilderService,
   ],
 })
 export class ChatModule {}
