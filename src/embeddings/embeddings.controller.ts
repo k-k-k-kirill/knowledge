@@ -64,4 +64,24 @@ export class EmbeddingsController {
       throw new BadRequestException('Error processing URL');
     }
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('text/:wiki_id')
+  async addPlainText(
+    @Request() req,
+    @Body('text') text: string,
+    @Param('wiki_id') wikiId: string,
+  ) {
+    if (!text) {
+      throw new BadRequestException('Text not provided');
+    }
+
+    try {
+      await this.embeddingsService.processText(text, wikiId, req.user.userId);
+      return { message: 'Text processed successfully' };
+    } catch (error) {
+      this.logger.error(`Error processing text: ${error}`);
+      throw new BadRequestException('Error processing text');
+    }
+  }
 }

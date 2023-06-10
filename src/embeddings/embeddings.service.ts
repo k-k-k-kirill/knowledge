@@ -211,4 +211,33 @@ export class EmbeddingsService {
       throw new BadRequestException('Failed to create source and text section');
     }
   }
+
+  async processText(
+    text: string,
+    wikiId: string,
+    userId: string,
+  ): Promise<{
+    message: string;
+    source: string;
+    sections: { total: number; data: string[] };
+  }> {
+    const chunks = getChunkedText(text, 300).filter(
+      (chunk) => chunk.trim().length > 0,
+    );
+
+    let sourceName = text.substring(0, 50);
+    if (text.length > 50) {
+      sourceName += '...';
+    }
+
+    const sourceData = {
+      name: sourceName,
+      type: 'text',
+      content_hash: getFileHash(Buffer.from(text)),
+      wiki_id: wikiId,
+      user_id: userId,
+    };
+
+    return this.processChunks(chunks, sourceData, userId);
+  }
 }
