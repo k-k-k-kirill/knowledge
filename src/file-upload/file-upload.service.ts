@@ -6,6 +6,7 @@ import {
 import { TextExtractionStrategy } from './strategies/text-extraction-strategy.interface';
 import { JsonTextExtractionStrategy } from './strategies/json-text-extraction.strategy';
 import { PdfTextExtractionStrategy } from './strategies/pdf-text-extraction.strategy';
+import { WordTextExtractionStrategy } from './strategies/word-text-extraction.strategy';
 
 @Injectable()
 export class FileUploadService {
@@ -14,6 +15,8 @@ export class FileUploadService {
   private strategies: Record<string, TextExtractionStrategy> = {
     'application/json': new JsonTextExtractionStrategy(),
     'application/pdf': new PdfTextExtractionStrategy(),
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document':
+      new WordTextExtractionStrategy(),
   };
 
   async extractTextFromBuffer(
