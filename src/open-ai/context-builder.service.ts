@@ -76,6 +76,10 @@ export class ContextBuilderService {
       userMessage,
     );
 
+    if (truncatedContextMessages.length === 0) {
+      truncatedContextMessages.push(userMessage.toJSON());
+    }
+
     return [systemMessage.toJSON(), ...truncatedContextMessages];
   }
 }
