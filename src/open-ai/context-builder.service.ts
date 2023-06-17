@@ -8,10 +8,13 @@ import { AssistantMessage } from './messages/assistant-message';
 import { TextSectionSchema } from '../text-sections/schemas/text-section.schema';
 import { SystemMessage } from './messages/system-message';
 import { PromptsService } from 'src/prompts/prompts.service';
-import { encode, decode, isWithinTokenLimit } from 'gpt-tokenizer';
+import { encode } from 'gpt-tokenizer';
 
 @Injectable()
 export class ContextBuilderService {
+  private totalTokenLimit = 16384;
+  private responseTokenLimit = 2048;
+
   constructor(private readonly promptsService: PromptsService) {}
 
   getContextMessages(messages: MessagesSchema[]) {
@@ -30,7 +33,7 @@ export class ContextBuilderService {
     userMessage: UserMessage,
   ): any[] {
     const truncatedMessages = [];
-    const tokenLimit = 3096;
+    const contextTokenLimit = this.totalTokenLimit - this.responseTokenLimit;
 
     const systemMessageTokenCount = encode(
       JSON.stringify(systemMessage.toJSON()),
@@ -45,7 +48,7 @@ export class ContextBuilderService {
     for (let i = messages.length - 1; i >= 0; i--) {
       const messageTokenCount = encode(JSON.stringify(messages[i])).length;
 
-      if (totalTokens + messageTokenCount < tokenLimit) {
+      if (totalTokens + messageTokenCount < contextTokenLimit) {
         truncatedMessages.unshift(messages[i]);
         totalTokens += messageTokenCount;
       } else {

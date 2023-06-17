@@ -13,7 +13,6 @@ import { config } from '../config';
 import { TextSectionSchema } from '../text-sections/schemas/text-section.schema';
 import { MessagesSchema } from 'src/messages/schema/messages.schema';
 import { ContextBuilderService } from './context-builder.service';
-import { SystemMessage } from './messages/system-message';
 
 @Injectable()
 export class OpenAiService {
@@ -75,10 +74,11 @@ export class OpenAiService {
 
       const { data: chatStream } = await this.openAIApi.createChatCompletion(
         {
-          model: 'gpt-3.5-turbo',
+          model: 'gpt-3.5-turbo-16k',
           temperature: 0,
           messages: contextMessages,
           stream: true,
+          max_tokens: 2048,
         },
         { responseType: 'stream' },
       );
