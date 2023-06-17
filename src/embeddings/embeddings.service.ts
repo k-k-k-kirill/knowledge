@@ -11,6 +11,7 @@ import * as cheerio from 'cheerio';
 
 @Injectable()
 export class EmbeddingsService {
+  private readonly chunkSize = 1000;
   private readonly logger = new Logger(EmbeddingsService.name);
 
   constructor(
@@ -98,7 +99,7 @@ export class EmbeddingsService {
       file.mimetype,
     );
 
-    return getChunkedText(text, 300);
+    return getChunkedText(text, this.chunkSize);
   }
 
   async processUrl(url: string, wikiId: string, userId: string) {
@@ -138,7 +139,7 @@ export class EmbeddingsService {
     wikiId: string,
     userId: string,
   ) {
-    const chunks = getChunkedText(text, 300).filter(
+    const chunks = getChunkedText(text, this.chunkSize).filter(
       (chunk) => chunk.trim().length > 0,
     );
 
@@ -221,7 +222,7 @@ export class EmbeddingsService {
     source: string;
     sections: { total: number; data: string[] };
   }> {
-    const chunks = getChunkedText(text, 300).filter(
+    const chunks = getChunkedText(text, this.chunkSize).filter(
       (chunk) => chunk.trim().length > 0,
     );
 

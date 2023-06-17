@@ -23,8 +23,8 @@ export class TextSectionsRepository extends EntityRepository<TextSectionSchema> 
     const { data, error } = await this.supabase.rpc('match_text_sections', {
       query_embedding: queryEmbedding,
       chatbot_id: chatbotId,
-      match_threshold: 0.8,
-      match_count: 10,
+      match_threshold: 0.7,
+      match_count: 20,
       user_id: userId,
     });
 
