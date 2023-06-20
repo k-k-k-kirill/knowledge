@@ -20,12 +20,14 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@nestjs/common": "^9.0.0",
+    "@nestjs/common": "^10.0.1",
     "@nestjs/config": "^2.3.1",
-    "@nestjs/core": "^9.0.0",
+    "@nestjs/core": "^10.0.1",
     "@nestjs/jwt": "^10.0.3",
     "@nestjs/passport": "^9.0.3",
     "@nestjs/platform-express": "^9.4.0",
+    "@nestjs/platform-socket.io": "^10.0.1",
+    "@nestjs/websockets": "^10.0.1",
     "@supabase/supabase-js": "^2.21.0",
     "cheerio": "^1.0.0-rc.12",
     "cookie": "^0.5.0",
