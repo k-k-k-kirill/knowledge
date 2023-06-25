@@ -49,22 +49,25 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
   ) {
     try {
       const { text, chatbotId, conversationId } = body;
-      const chatStream = await this.chatService.getChatResponseInStream(
+      const response = await this.chatService.getChatResponseInStream(
         text,
         chatbotId,
         conversationId,
         client.userId as string,
       );
 
-      for await (const data of chatStream) {
+      for await (const data of response.responseStream) {
         const dataString = data.toString();
 
         if (dataString.includes('[DONE]')) {
           client.emit('response', '[DONE]');
+          client.emit('response_sections', response.textSections);
           return;
         }
 
         const chunks = dataString.trim().split(/\n+/);
+
+        console.log(chunks);
 
         chunks.forEach((chunkString) => {
           const chunkJSON = chunkString.replace('data: ', '');

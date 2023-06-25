@@ -5,25 +5,37 @@ import {
 } from '@nestjs/common';
 import { MessagesRepository } from './messages.repository';
 import { CreateMessageDto } from './dto/create-message.dto';
+import { MessagesTextSectionsRepository } from './messages-text-sections.repository';
 
 @Injectable()
 export class MessagesService {
   private readonly logger = new Logger(MessagesService.name);
 
-  constructor(private readonly messagesRepository: MessagesRepository) {}
+  constructor(
+    private readonly messagesRepository: MessagesRepository,
+    private readonly messagesTextSectionsRepository: MessagesTextSectionsRepository,
+  ) {}
 
   async createMessageInConversation(
     conversationId: string,
     messageData: CreateMessageDto,
     userId: string,
+    textSections?: any[],
   ) {
     try {
-      await this.messagesRepository.create({
+      const { id: messageId } = await this.messagesRepository.create({
         conversation_id: conversationId,
         author: messageData.author,
         content: messageData.content,
         user_id: userId,
       });
+
+      if (textSections && textSections.length > 0) {
+        await this.messagesTextSectionsRepository.insertTextSectionsForMessage(
+          messageId,
+          textSections,
+        );
+      }
     } catch (error) {
       this.logger.error(
         'Failed to add message to conversation: ',

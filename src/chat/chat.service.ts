@@ -43,7 +43,7 @@ export class ChatService {
         );
       }
 
-      return responseStream;
+      return { responseStream, textSections };
     } catch (error) {
       this.logger.error('Error getting chat response stream: ', error.message);
       throw new InternalServerErrorException(error.message);

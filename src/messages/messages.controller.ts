@@ -20,12 +20,14 @@ export class MessagesController {
   postMessage(
     @Request() req,
     @Param('conversationId') conversationId: string,
-    @Body() messageData: CreateMessageDto,
+    @Body('messageData') messageData: CreateMessageDto,
+    @Body('textSections') textSections?: any[],
   ) {
     return this.messagesService.createMessageInConversation(
       conversationId,
       messageData,
       req.user.userId,
+      textSections,
     );
   }
 

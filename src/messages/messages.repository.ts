@@ -17,7 +17,15 @@ export class MessagesRepository extends EntityRepository<MessagesSchema> {
       id,
       author,
       conversation_id,
-      content
+      content,
+      text_sections (
+        id,
+        text,
+        sources (
+          id,
+          name
+        )
+      )
       `,
       )
       .eq('conversation_id', conversationId)

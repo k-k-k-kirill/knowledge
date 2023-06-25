@@ -3,11 +3,12 @@ import { SupabaseClient } from '@supabase/supabase-js';
 export abstract class EntityRepository<T> {
   constructor(protected tableName: string, protected supabase: any) {}
 
-  async create(data: Partial<T>): Promise<unknown> {
+  async create(data: Partial<T>): Promise<T> {
     const { data: result, error } = await this.supabase
       .from(this.tableName)
       .insert(data)
-      .single();
+      .single()
+      .select();
 
     if (error) {
       throw new Error(error.message);
@@ -15,8 +16,6 @@ export abstract class EntityRepository<T> {
 
     return result;
   }
-
-  // entity.repository.ts
 
   async createInTransaction(trx: any, data: Partial<T>): Promise<any> {
     const { data: result, error } = await trx
