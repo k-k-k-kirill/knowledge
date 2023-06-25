@@ -67,8 +67,6 @@ export class ChatGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
         const chunks = dataString.trim().split(/\n+/);
 
-        console.log(chunks);
-
         chunks.forEach((chunkString) => {
           const chunkJSON = chunkString.replace('data: ', '');
           const chunk = JSON.parse(chunkJSON);
