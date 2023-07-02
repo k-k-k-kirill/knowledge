@@ -57,11 +57,12 @@ export abstract class EntityRepository<T> {
     return data;
   }
 
-  async update(id: number, data: Partial<T>): Promise<any> {
+  async update(id: string, data: Partial<T>, userId): Promise<any> {
     const { data: result, error } = await this.supabase
       .from(this.tableName)
       .update(data)
       .eq('id', id)
+      .eq('user_id', userId)
       .single();
 
     if (error) {

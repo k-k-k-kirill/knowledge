@@ -9,10 +9,12 @@ import {
   Logger,
   UseGuards,
   Request,
+  Put,
 } from '@nestjs/common';
 import { WikisService } from './wikis.service';
 import { CreateWikiDto } from './dto/create-wiki.dto';
 import { JwtAuthGuard } from '../auth/auth.guard';
+import { UpdateWikiDto } from './dto/update-wiki.dto';
 
 @Controller('wikis')
 export class WikisController {
@@ -28,6 +30,25 @@ export class WikisController {
     } catch (error) {
       this.logger.error('Error creating wiki: ' + error.message, error.stack);
       throw new InternalServerErrorException('Error creating wiki');
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put(':wikiId')
+  async update(
+    @Request() req,
+    @Param('wikiId') wikiId: string,
+    @Body() updateWikiDto: UpdateWikiDto,
+  ) {
+    try {
+      return await this.wikisService.update(
+        wikiId,
+        updateWikiDto,
+        req.user.userId,
+      );
+    } catch (error) {
+      this.logger.error('Error updating wiki: ' + error.message, error.stack);
+      throw new InternalServerErrorException('Error updating wiki');
     }
   }
 

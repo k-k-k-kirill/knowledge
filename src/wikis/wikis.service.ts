@@ -1,8 +1,8 @@
-// src/wikis/wikis.service.ts
 import { Injectable } from '@nestjs/common';
 import { CreateWikiDto } from './dto/create-wiki.dto';
 import { WikisRepository } from './wikis.repository';
 import { WikisSchema } from './schema/wikis.schema';
+import { UpdateWikiDto } from './dto/update-wiki.dto';
 
 @Injectable()
 export class WikisService {
@@ -16,6 +16,20 @@ export class WikisService {
       ...createWikiDto,
       user_id: userId,
     });
+  }
+
+  async update(
+    wikiId: string,
+    updateWikiDto: UpdateWikiDto,
+    userId: string,
+  ): Promise<void> {
+    return await this.wikisRepository.update(
+      wikiId,
+      {
+        ...updateWikiDto,
+      },
+      userId,
+    );
   }
 
   async delete(wikiId: string, userId: string): Promise<void> {
