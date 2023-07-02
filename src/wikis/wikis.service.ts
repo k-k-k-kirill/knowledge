@@ -8,8 +8,14 @@ import { WikisSchema } from './schema/wikis.schema';
 export class WikisService {
   constructor(private readonly wikisRepository: WikisRepository) {}
 
-  async create(createWikiDto: CreateWikiDto, userId: string): Promise<void> {
-    await this.wikisRepository.create({ ...createWikiDto, user_id: userId });
+  async create(
+    createWikiDto: CreateWikiDto,
+    userId: string,
+  ): Promise<WikisSchema> {
+    return await this.wikisRepository.create({
+      ...createWikiDto,
+      user_id: userId,
+    });
   }
 
   async delete(wikiId: string, userId: string): Promise<void> {

@@ -24,7 +24,7 @@ export class WikisController {
   @Post()
   async create(@Request() req, @Body() createWikiDto: CreateWikiDto) {
     try {
-      await this.wikisService.create(createWikiDto, req.user.userId);
+      return await this.wikisService.create(createWikiDto, req.user.userId);
     } catch (error) {
       this.logger.error('Error creating wiki: ' + error.message, error.stack);
       throw new InternalServerErrorException('Error creating wiki');
