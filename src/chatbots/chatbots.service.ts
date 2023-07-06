@@ -33,7 +33,7 @@ export class ChatbotsService {
     userId: string,
   ): Promise<any> {
     try {
-      const { error } = await this.chatbotsRepository.createChatbot(
+      const { error, data } = await this.chatbotsRepository.createChatbot(
         createChatbot,
         userId,
       );
@@ -42,6 +42,8 @@ export class ChatbotsService {
         this.logger.error(`Failed to create chatbot: ${error}`);
         throw new InternalServerErrorException('Failed to create chatbot');
       }
+
+      return data;
     } catch (error) {
       this.logger.error(`Failed to create chatbot: ${error}`);
       throw new InternalServerErrorException('Failed to create chatbot');

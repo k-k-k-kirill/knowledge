@@ -54,7 +54,7 @@ export class ChatbotsController {
     @Body() createChatbotDto: CreateChatbotDto,
   ) {
     try {
-      await this.chatbotsService.createChatbot(
+      return await this.chatbotsService.createChatbot(
         createChatbotDto,
         req.user.userId,
       );
