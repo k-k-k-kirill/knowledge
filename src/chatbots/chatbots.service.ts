@@ -5,12 +5,16 @@ import {
 } from '@nestjs/common';
 import { CreateChatbotDto } from './dto/create-chatbot.dto';
 import { ChatbotsRepository } from './chatbots.repository';
+import { ChatbotsWikisRepository } from './chatbots-wikis.repository';
 
 @Injectable()
 export class ChatbotsService {
   private readonly logger = new Logger(ChatbotsService.name);
 
-  constructor(private readonly chatbotsRepository: ChatbotsRepository) {}
+  constructor(
+    private readonly chatbotsRepository: ChatbotsRepository,
+    private readonly chatbotsWikisRepository: ChatbotsWikisRepository,
+  ) {}
 
   async getAllChatbots(userId: string) {
     const chatbots = await this.chatbotsRepository.findAll(userId);
@@ -52,5 +56,25 @@ export class ChatbotsService {
 
   async deleteChatbot(chatbotId: string, userId: string) {
     await this.chatbotsRepository.deleteChatbotById(chatbotId, userId);
+  }
+
+  async updateWikisForChatbot(chatbotId: string, wikiIds: string[]) {
+    try {
+      const { error, data } =
+        await this.chatbotsWikisRepository.updateWikisForChatbot(
+          chatbotId,
+          wikiIds,
+        );
+
+      if (error) {
+        this.logger.error(`Failed to update chatbot: ${error}`);
+        throw new InternalServerErrorException('Failed to update chatbot');
+      }
+
+      return data;
+    } catch (error) {
+      this.logger.error(`Failed to update chatbot: ${error}`);
+      throw new InternalServerErrorException('Failed to update chatbot');
+    }
   }
 }

@@ -9,6 +9,7 @@ import {
   Logger,
   UseGuards,
   Request,
+  Put,
 } from '@nestjs/common';
 import { CreateChatbotDto } from './dto/create-chatbot.dto';
 import { ChatbotsService } from './chatbots.service';
@@ -72,6 +73,23 @@ export class ChatbotsController {
     } catch (error) {
       this.logger.error(`Error deleting chatbot: ${error.message}`);
       throw new BadRequestException('Failed to delete chatbot');
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Put(':chatbotId/wikis')
+  async updateWikisForChatbot(
+    @Param('chatbotId') chatbotId: string,
+    @Body() wikiIds: string[],
+  ) {
+    try {
+      return await this.chatbotsService.updateWikisForChatbot(
+        chatbotId,
+        wikiIds,
+      );
+    } catch (error) {
+      this.logger.error(`Error updating chatbot: ${error.message}`);
+      throw new BadRequestException('Failed to update chatbot');
     }
   }
 }
