@@ -13,7 +13,6 @@ import { MessagesRepository } from 'src/messages/messages.repository';
 import { PromptsService } from '../prompts/prompts.service';
 import { OpenAiModule } from '../open-ai/open-ai.module';
 import { ContextBuilderService } from 'src/open-ai/context-builder.service';
-import { ChatGateway } from './chat.gateway';
 import { JwtAuthService } from 'src/auth/jwt-auth.service';
 
 @Module({
@@ -32,7 +31,6 @@ import { JwtAuthService } from 'src/auth/jwt-auth.service';
     MessagesRepository,
     PromptsService,
     ContextBuilderService,
-    ChatGateway,
     JwtAuthService,
   ],
   exports: [],

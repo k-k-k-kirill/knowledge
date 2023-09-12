@@ -43,9 +43,10 @@ export class OpenAiService {
       );
 
       const completion = await this.openAIApi.createChatCompletion({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4',
         temperature: 0,
         messages: contextMessages,
+        max_tokens: 2048,
       });
 
       return completion.data.choices[0].message;
@@ -74,7 +75,7 @@ export class OpenAiService {
 
       const { data: chatStream } = await this.openAIApi.createChatCompletion(
         {
-          model: 'gpt-3.5-turbo-16k',
+          model: 'gpt-4',
           temperature: 0,
           messages: contextMessages,
           stream: true,
